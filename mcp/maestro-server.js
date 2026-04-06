@@ -37951,6 +37951,63 @@ registerTool({
     required: ["resources"]
   }
 }, handleGetSkillContent);
+var require_setup_models = __commonJS({
+  "plugins/maestro/src/mcp/handlers/setup-models.js"(exports2, module2) {
+    "use strict";
+    const fs2 = require("fs");
+    const path = require("path");
+    const { atomicWriteSync } = require_atomic_write();
+    async function handleSetupModels(params, projectRoot) {
+      const settingsPath = path.join(projectRoot, ".gemini", "settings.json");
+      if (fs2.existsSync(settingsPath)) {
+        return { status: "already_configured" };
+      }
+      const mode = params.mode;
+      if (mode === "skip") {
+        const settings = { experimental: { enableAgents: true } };
+        atomicWriteSync(settingsPath, JSON.stringify(settings, null, 2));
+        return { status: "initialized_default" };
+      }
+      if (!["quality", "balanced", "economic"].includes(mode)) {
+        throw new Error(`Invalid mode: ${mode}`);
+      }
+      const extensionRoot = process.env.MAESTRO_EXTENSION_PATH || process.env.CLAUDE_PLUGIN_ROOT || __dirname.replace(/\/mcp$/, "");
+      const modesPath = path.join(extensionRoot, "lib", "config", "agent-modes.json");
+      let modes;
+      try {
+        modes = JSON.parse(fs2.readFileSync(modesPath, "utf8"));
+      } catch (err) {
+        throw new Error(`Failed to read agent-modes.json: ${err.message}`);
+      }
+      const mapping = modes[mode];
+      if (!mapping) {
+        throw new Error(`Unknown mode: ${mode}`);
+      }
+      const settings = {
+        experimental: { enableAgents: true },
+        agents: { overrides: {} }
+      };
+      for (const [agent, model] of Object.entries(mapping)) {
+        settings.agents.overrides[agent] = { model: model };
+      }
+      atomicWriteSync(settingsPath, JSON.stringify(settings, null, 2));
+      return { status: "success", mode: mode };
+    }
+    module2.exports = { handleSetupModels };
+  }
+});
+var { handleSetupModels } = require_setup_models();
+registerTool({
+  name: "setup_models",
+  description: "Configure Maestro subagent models in .gemini/settings.json based on selected mode.",
+  inputSchema: {
+    type: "object",
+    properties: {
+      mode: { type: "string", enum: ["quality", "balanced", "economic", "skip"], description: "The operating mode to configure." }
+    },
+    required: ["mode"]
+  }
+}, handleSetupModels);
 async function main() {
   log("info", "MCP server starting");
   const transport = new StdioServerTransport();
