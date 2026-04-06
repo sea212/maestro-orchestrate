@@ -37875,6 +37875,32 @@ registerTool({
     }
   }
 }, handleResolveSettings);
+var require_setup_models = __commonJS({
+  "plugins/maestro/src/mcp/handlers/setup-models.js"(exports2, module2) {
+    "use strict";
+    const fs2 = require("fs");
+    const path = require("path");
+    const { atomicWriteSync } = require_atomic_write();
+    async function handleSetupModels(params, projectRoot) {
+      // TODO: Implement Claude model mapping once Claude mode config file 
+      // or Gemini -> Claude model mapping is available.
+      return { status: "not_implemented", message: "Model configuration for Claude mode is currently unavailable." };
+    }
+    module2.exports = { handleSetupModels };
+  }
+});
+var { handleSetupModels } = require_setup_models();
+registerTool({
+  name: "setup_models",
+  description: "Configure Maestro subagent models in .gemini/settings.json based on selected mode.",
+  inputSchema: {
+    type: "object",
+    properties: {
+      mode: { type: "string", enum: ["quality", "balanced", "economic", "skip"], description: "The operating mode to configure." }
+    },
+    required: ["mode"]
+  }
+}, handleSetupModels);
 async function main() {
   log("info", "MCP server starting");
   const transport = new StdioServerTransport();
