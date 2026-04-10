@@ -7,7 +7,10 @@ STARTUP (Turn 1 — tool calls only, no text output)
       - **Quality**: Higher accuracy, higher cost
       - **Balanced**: Balanced performance and cost
       - **Economic**: Lowest cost, lower performance
-    - After selection, call the `setup_models` MCP tool with the `mode` parameter set to the selected mode to create the file with the appropriate agent overrides.
+      - **Skip**: Skip local model configuration (no settings.json will be created)
+    - After selection:
+      - If **Skip** was selected, do NOT call `setup_models`.
+      - Otherwise, call the `setup_models` MCP tool with the `mode` parameter set to the selected mode to create the file with the appropriate agent overrides.
     - Continue to Step 4.
  4. Call get_session_status — if active, present status and offer resume/archive.
  5. Call assess_task_complexity.
