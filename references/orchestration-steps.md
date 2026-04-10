@@ -7,9 +7,17 @@ STARTUP (Turn 1 — tool calls only, no text output)
       - **Quality**: Higher accuracy, higher cost
       - **Balanced**: Balanced performance and cost
       - **Economic**: Lowest cost, lower performance
+<<<<<<< HEAD
+      - **Skip**: Skip local model configuration (no settings.json will be created)
+    - After selection:
+      - If **Skip** was selected, do NOT call `setup_models`.
+      - Otherwise, call the `setup_models` MCP tool with the `mode` parameter set to the selected mode to create the file with the appropriate agent overrides.
+    - Continue to Step 4.
+=======
     - After selection, call the `setup_models` MCP tool with the `mode` parameter set to the selected mode to create the file with the appropriate agent overrides.
     - **Halt Execution**: Inform the user: "A restart of the Gemini client is necessary to activate the subagent model configuration. Restart the client and resume the session. I'll be waiting here."
     - **Wait for signal**: STOP here and wait for the user to restart and signal to continue. Do NOT proceed to Step 4 in this turn.
+>>>>>>> feat-model-config
  4. Call get_session_status — if active, present status and offer resume/archive.
  5. Call assess_task_complexity.
  6. Parse MAESTRO_DISABLED_AGENTS from resolved settings. Exclude listed agents from all planning.
